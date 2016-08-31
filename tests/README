@@ -1,0 +1,26 @@
+This is simply a test layer for use by the wr-template layer.
+
+The following lists the various tests assisted by this layer
+
+Banners:
+
+In your local.conf file add:
+
+CONFIG_BANNER[banner] = "This is a test of the CONFIG_BANNER"
+BANNER[banner] = "This is a test of the runtime banner"
+
+bitbake -c fetch bash
+
+You should see both banners displayed.
+
+bitbake -c fetch bash
+
+You should only see the runtime banner displayed.
+
+
+Banner w/ template:
+
+In your local.conf file (clear the previous test, then) add:
+
+WRTEMPLATES = "feature/banner"
+

@@ -1,0 +1,10 @@
+This layer implements support for the Wind River template mechanism.
+
+You must add this layer -first- in your build's conf/bblayers.conf file, such
+as:
+
+BBLAYERS ?= " \
+  /home/user/oe-core/wr-template \
+  /home/user/oss/oe-core/meta \
+  "
+
