@@ -23,23 +23,28 @@
 # The generate files are listed below:
 
 WRTEMPLATE_README = "README_templates"
-WRTEMPLATE_CONF_WRTEMPLATES = "conf/wrtemplates.conf"
-WRTEMPLATE_CONF_WRTEMPLATES_MACH = "conf/wrtemplates_${MACHINE}.conf"
+WRTEMPLATE_CONF_WRTEMPLATE = "conf/wrtemplate.conf"
+WRTEMPLATE_CONF_WRTEMPLATE_MACH = "conf/wrtemplate_${MACHINE}.conf"
 WRTEMPLATE_CONF_WRIMAGE = "conf/wrimage.inc"
 WRTEMPLATE_CONF_WRIMAGE_MACH = "conf/wrimage_${MACHINE}.inc"
 
-include ${WRTEMPLATE_CONF_WRTEMPLATES}
-include ${WRTEMPLATE_CONF_WRTEMPLATES_MACH}
+include ${WRTEMPLATE_CONF_WRTEMPLATE}
+include ${WRTEMPLATE_CONF_WRTEMPLATE_MACH}
 
 # Space separated list of templates to load.  Note: "default" templates are
 # always loaded.
-WRTEMPLATES ?= ""
+WRTEMPLATE ?= ""
 
 # Space separated list of templates to avoid loading.  Uses 'endswith'
-WRTEMPLATES_SKIP ?= ""
+WRTEMPLATE_SKIP ?= ""
 
 # Should we process 'bsp' specific templates
-WRTEMPLATES_BSP_PKGS ?= '1'
+WRTEMPLATE_BSP_PKGS ?= '1'
+
+# Should the image use the image template items
+# This can be set to != 1 globally, or on a per recipe basis such aas:
+# WRTEMPLATE_IMAGE_pn-core-image-minimal = '0'
+WRTEMPLATE_IMAGE ?= '1'
 
 # Check if we need to reprocess the templates
 addhandler wrl_template_processing_eventhandler
@@ -79,7 +84,7 @@ python wrl_template_processing_eventhandler () {
 
                 # Check if the template should be skipped
                 skipped = 0
-                for skip in (d.getVar("WRTEMPLATES_SKIP", True) or "").split():
+                for skip in (d.getVar("WRTEMPLATE_SKIP", True) or "").split():
                     if tmpldir.endswith(skip):
                         skipped = 1
                         break
@@ -130,8 +135,8 @@ python wrl_template_processing_eventhandler () {
     thisclass = bb.utils.which(bbpath, 'classes/wrltemplate.bbclass')
 
     readmef = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_README', True))
-    wrtemplatef = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_CONF_WRTEMPLATES', True))
-    wrtemplatemf = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_CONF_WRTEMPLATES_MACH', True))
+    wrtemplatef = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_CONF_WRTEMPLATE', True))
+    wrtemplatemf = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_CONF_WRTEMPLATE_MACH', True))
     wrimagef = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_CONF_WRIMAGE', True))
     wrimagemf = os.path.join(e.data.getVar('TOPDIR', True), d.getVar('WRTEMPLATE_CONF_WRIMAGE_MACH', True))
 
@@ -143,10 +148,10 @@ python wrl_template_processing_eventhandler () {
     wrimagemt = 0
 
     # If the config file looks ok, verify they are newer then this class
-    if e.data.getVar("WRTEMPLATES", True) == e.data.getVarFlag("WRTEMPLATES", 'manual', True) and \
-       e.data.getVar("WRTEMPLATES", True) == e.data.getVarFlag("WRTEMPLATES", 'machine', True) and \
-       e.data.getVar("WRTEMPLATES_SKIP", True) == e.data.getVarFlag("WRTEMPLATES", "skip", True) and \
-       e.data.getVar("BBLAYERS", True) == e.data.getVarFlag("WRTEMPLATES", "bblayers", True):
+    if e.data.getVar("WRTEMPLATE", True) == e.data.getVarFlag("WRTEMPLATE", 'manual', True) and \
+       e.data.getVar("WRTEMPLATE", True) == e.data.getVarFlag("WRTEMPLATE", 'machine', True) and \
+       e.data.getVar("WRTEMPLATE_SKIP", True) == e.data.getVarFlag("WRTEMPLATE", "skip", True) and \
+       e.data.getVar("BBLAYERS", True) == e.data.getVarFlag("WRTEMPLATE", "bblayers", True):
         classmt = os.path.getmtime(thisclass)
 
         if os.path.exists(readmef):
@@ -166,12 +171,12 @@ python wrl_template_processing_eventhandler () {
 
     # If we detect missing configuration, or the configuration is older then this class
     # regenerate files as necessary...
-    if e.data.getVar("WRTEMPLATES", True) != e.data.getVarFlag("WRTEMPLATES", 'manual', True) or \
-       e.data.getVar("WRTEMPLATES_SKIP", True) != e.data.getVarFlag("WRTEMPLATES", "skip", True) or \
-       e.data.getVar("WRTEMPLATES", True) != e.data.getVarFlag("WRTEMPLATES", 'machine', True) or \
-       e.data.getVar("WRTEMPLATES_SKIP", True) != e.data.getVarFlag("WRTEMPLATES", "machine_skip", True) or \
-       e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATES", "bblayers", True) or \
-       e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATES", "machine_bblayers", True) or \
+    if e.data.getVar("WRTEMPLATE", True) != e.data.getVarFlag("WRTEMPLATE", 'manual', True) or \
+       e.data.getVar("WRTEMPLATE_SKIP", True) != e.data.getVarFlag("WRTEMPLATE", "skip", True) or \
+       e.data.getVar("WRTEMPLATE", True) != e.data.getVarFlag("WRTEMPLATE", 'machine', True) or \
+       e.data.getVar("WRTEMPLATE_SKIP", True) != e.data.getVarFlag("WRTEMPLATE", "machine_skip", True) or \
+       e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATE", "bblayers", True) or \
+       e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATE", "machine_bblayers", True) or \
        readmet < classmt or wrtemplatet < classmt or wrimaget < classmt or \
        wrtemplatemt < classmt or wrimagemt < classmt:
         bb.plain("Processing Wind River templates files...")
@@ -192,7 +197,7 @@ python wrl_template_processing_eventhandler () {
                         templates.append(t)
 
         # Process user templates
-        for templ in e.data.getVar("WRTEMPLATES", True).split():
+        for templ in e.data.getVar("WRTEMPLATE", True).split():
             (templs, notfound, nflist) = find_template(bbpath, templ, None, templates.copy())
             if notfound == 1:
                 bb.error('Unable to find template "%s"' % (templ))
@@ -210,9 +215,9 @@ python wrl_template_processing_eventhandler () {
             return
 
         # Check if the configuration wide files are out of date and need to be regenerated...
-        if e.data.getVar("WRTEMPLATES", True) != e.data.getVarFlag("WRTEMPLATES", 'manual', True) or \
-           e.data.getVar("WRTEMPLATES_SKIP", True) != e.data.getVarFlag("WRTEMPLATES", "skip", True) or \
-           e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATES", "bblayers", True) or \
+        if e.data.getVar("WRTEMPLATE", True) != e.data.getVarFlag("WRTEMPLATE", 'manual', True) or \
+           e.data.getVar("WRTEMPLATE_SKIP", True) != e.data.getVarFlag("WRTEMPLATE", "skip", True) or \
+           e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATE", "bblayers", True) or \
            readmet < classmt or wrtemplatet < classmt or wrimaget < classmt:
             # Construct the README_templates file
             f = open(readmef, 'w')
@@ -228,15 +233,15 @@ python wrl_template_processing_eventhandler () {
                     f.write('\n')
             f.close()
 
-            # Construct the conf/wrtemplates.conf file
+            # Construct the conf/wrtemplate.conf file
             f = open(wrtemplatef, 'w')
             f.write('# This file is automatically generated by the wrltemplate bbclass.\n')
             f.write('# Any changes made to this file will be lost when it is regenerated.\n')
             f.write('# Generated on %s\n' % e.data.getVar('DATETIME', True))
             f.write('\n')
-            f.write('WRTEMPLATES[manual] = "%s"\n' % (e.data.getVar("WRTEMPLATES", True)))
-            f.write('WRTEMPLATES[skip] = "%s"\n' % (e.data.getVar("WRTEMPLATES_SKIP", True)))
-            f.write('WRTEMPLATES[bblayers] = "%s"\n' % (e.data.getVar("BBLAYERS", True)))
+            f.write('WRTEMPLATE[manual] = "%s"\n' % (e.data.getVar("WRTEMPLATE", True)))
+            f.write('WRTEMPLATE[skip] = "%s"\n' % (e.data.getVar("WRTEMPLATE_SKIP", True)))
+            f.write('WRTEMPLATE[bblayers] = "%s"\n' % (e.data.getVar("BBLAYERS", True)))
             f.write('\n')
             for t in templates:
                 f.write('#### %s\n' % t)
@@ -265,11 +270,11 @@ python wrl_template_processing_eventhandler () {
         # Check if the machine specific configuration files are out of date and need to be regenerated...
         # It is valid for the system config to be set, but machine config to be differrent
         # this happens when the user switches machines, or does a multiple machine build
-        if e.data.getVar("WRTEMPLATES", True) != e.data.getVarFlag("WRTEMPLATES", 'machine', True) or \
-           e.data.getVar("WRTEMPLATES_SKIP", True) != e.data.getVarFlag("WRTEMPLATES", "machine_skip", True) or \
-           e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATES", "machine_bblayers", True) or \
+        if e.data.getVar("WRTEMPLATE", True) != e.data.getVarFlag("WRTEMPLATE", 'machine', True) or \
+           e.data.getVar("WRTEMPLATE_SKIP", True) != e.data.getVarFlag("WRTEMPLATE", "machine_skip", True) or \
+           e.data.getVar("BBLAYERS", True) != e.data.getVarFlag("WRTEMPLATE", "machine_bblayers", True) or \
            wrtemplatemt < classmt or wrimagemt < classmt:
-            process_mach = d.getVar('WRTEMPLATES_BSP_PKGS', True)
+            process_mach = d.getVar('WRTEMPLATE_BSP_PKGS', True)
 
             # Figure out which layer is providing the machine.conf file, limit
             # the following steps to ONLY templates in that layer (and layers in it's directory)
@@ -277,15 +282,15 @@ python wrl_template_processing_eventhandler () {
             if machlayer:
                 machlayer = "/".join(machlayer.split('/')[:-3])
 
-            # Construct the conf/wrtemplates_${MACHINE}.conf file
+            # Construct the conf/wrtemplate_${MACHINE}.conf file
             f = open(wrtemplatemf, 'w')
             f.write('# This file is automatically generated by the wrltemplate bbclass.\n')
             f.write('# Any changes made to this file will be lost when it is regenerated.\n')
             f.write('# Generated on %s\n' % e.data.getVar('DATETIME', True))
             f.write('\n')
-            f.write('WRTEMPLATES[machine] = "%s"\n' % (e.data.getVar("WRTEMPLATES", True)))
-            f.write('WRTEMPLATES[machine_skip] = "%s"\n' % (e.data.getVar("WRTEMPLATES_SKIP", True)))
-            f.write('WRTEMPLATES[machine_bblayers] = "%s"\n' % (e.data.getVar("BBLAYERS", True)))
+            f.write('WRTEMPLATE[machine] = "%s"\n' % (e.data.getVar("WRTEMPLATE", True)))
+            f.write('WRTEMPLATE[machine_skip] = "%s"\n' % (e.data.getVar("WRTEMPLATE_SKIP", True)))
+            f.write('WRTEMPLATE[machine_bblayers] = "%s"\n' % (e.data.getVar("BBLAYERS", True)))
             f.write('\n')
             if process_mach == '1':
                 for t in templates:

@@ -37,5 +37,5 @@ inherit ${@wrlt_next_class(d, 'image')}
 
 # The includes must always be -after- image.bbclass inherit
 # because they may add or remove from the image variable
-include ${WRTEMPLATE_CONF_WRIMAGE}
-include ${WRTEMPLATE_CONF_WRIMAGE_MACH}
+include ${@['${WRTEMPLATE_CONF_WRIMAGE}', 'wrnoimage.inc'][d.getVar('WRTEMPLATE_IMAGE', True) != '1']}
+include ${@['${WRTEMPLATE_CONF_WRIMAGE_MACH}', 'wrnoimage.inc'][d.getVar('WRTEMPLATE_IMAGE', True) != '1']}
