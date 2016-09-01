@@ -312,10 +312,3 @@ python wrl_template_processing_eventhandler () {
 
         e.data.setVar("BB_INVALIDCONF", '1')
 }
-
-#addhandler wrl_banner_eventhandler
-#wrl_banner_eventhandler[eventmask] = "bb.event.ParseStarted bb.event.BuildStarted"
-#python wrl_banner_eventhandler () {
-#    bb.plain("WRTEMPLATES: %s" % e.data.getVar("WRTEMPLATES", True))
-#    bb.plain("WRTEMPLATES[manual]: %s" % e.data.getVarFlag("WRTEMPLATES", 'manual', True))
-#}
