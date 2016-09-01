@@ -126,3 +126,52 @@ require /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/
 #### /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree
 require /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree/template.conf
 
+
+Verify an alternative machine only updates the machine files:
+
+run MACHINE=qemuarm bitbake -c fetch
+
+Look in the conf directory for the 'wr*' files.  You should notice the dates on
+the two files with 'qemuarm' in them are newer then the other files.
+
+This shows the base template files were kept, and only the missing machine files
+were updated.
+
+
+General image modification:
+
+This test will build two test images, then add a template, and add an 'exception'
+so that only one image gets the new code
+
+
+run  bitbake test-image-one test-image-two
+
+run  runqemu qemux86 test-image-one nographic
+(to exit QEMU ctrl-a x)
+
+(the system should boot, you can login as root)
+
+run  runqemu qemux86 test-image-two nographic
+
+(the system should boot, you can login as root)
+
+
+Add the following to your local.conf (after any existing WRTEMPLATES entries):
+
+WRTEMPLATES += "feature/target-toolchain"
+
+WRTEMPLATES_IMAGE_pn-test-image-two = '0'
+
+run  bitbake test-image-one test-image-two
+
+run  runqemu qemux86 test-image-one nographic
+login as root
+gcc --version
+(should return a version, not an error)
+(exit qemu)
+
+run  runqemu qemux86 test-image-two nographic
+login as root
+gcc --version
+(should return an error, gcc: not found)
+(exit qemu)
