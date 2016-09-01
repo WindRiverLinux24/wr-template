@@ -1,3 +1,8 @@
+#
+# Template helper class
+#
+# Copyright (C) 2016 Wind River
+#
 # The Wind River template is a mechanism to assist the user in performing a
 # specific configuration task.  This may include requiring other templates,
 # setting various configuration options, adjusting image settings or even

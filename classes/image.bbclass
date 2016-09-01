@@ -1,3 +1,12 @@
+#
+# Template helper and image override class
+#
+# Copyright (C) 2016 Wind River
+#
+# Purpose of this class is to intercept the image.bbclass inherit and add
+# template process inclusion.
+#
+
 def wrlt_next_class(d, classname):
     """
     This function should be called w/ d and the name of this class (classname)

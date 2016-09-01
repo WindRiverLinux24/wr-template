@@ -1,10 +1,81 @@
-This layer implements support for the Wind River template mechanism.
+wr-template
+===========
 
-You must add this layer -first- in your build's conf/bblayers.conf file, such
-as:
+This layer provides template processing support to OpenEmbedded.  Wind River
+templates are a mechanism that permit various configurations to be enabled
+with a simple setting.
+
+
+What is a template?
+-------------------
+A template lives in the 'templates' directory of a given layer.  The templates
+directory contains a series of directories to organize the templates.  The name
+of the directory is used to enable the template.  The 'default' directory will
+cause that template to be included by default even if the user has not
+specified it.
+
+A template directory may contain:
+   README - template README file
+   require - list of other templates required for this one
+   template.conf - template configuration fragment
+   image.inc - image fragment
+   bsp-pkgs.conf - BSP specific configuration fragment
+   bsp-pkgs.inc - BSP specific image fragment
+
+The README file is simply plain text that will be copied to a generated
+README_templates file in the users TOPDIR.  This allows a user to see
+all README information for each template they have selected.
+
+The require file may include comments, starting with a '#' or template names
+to include.
+
+The template.conf file contains various configuration variables that would
+normally be placed into local.conf (or another similar.conf file) by the user.
+
+The image.inc file contains various image recipe specific variables.  The
+variables here are typically added to a recipe (.bb) or bbappend file.
+
+The bsp-pkgs.conf and bsp-pkgs.inc files are only loaded if the user is
+compiling a BSP that is defined in that layer.  The bsp-pkgs.conf is equivalent
+to the template.conf file, while the bsp-pkgs.inc is equivalent to the
+image.inc file.
+
+In addition, the layer allows for the templates to set various banner
+messages.
+
+    CONFIG_BANNER[path_to_template] = "..."
+    BANNER[path_to_template] = "..."
+
+A configuration banner is only displayed if bitbake has to reparse the
+configuration.  A runtime banner will always be displayed each time a 
+build is run.
+
+
+Dependencies
+------------
+This layer must be included prior to oe-core.  It has not dependencies on
+other layers, but it is expected that other layers will depend on it.
+
+
+Maintenance
+-----------
+This layer is maintained by Wind River Systems, Inc.
+Contact <support@windriver.com> or your support representative for more
+information on submitting changes.
+
+
+Using the wr-template layer
+---------------------------
+This layer must be added to the bblayers.conf in your project prior to the
+OpenEmbedded 'meta' layer, such as:
 
 BBLAYERS ?= " \
-  /home/user/oe-core/wr-template \
-  /home/user/oss/oe-core/meta \
-  "
+  /home/mhatle/git/oss/oe-core/wr-template \
+  /home/mhatle/git/oss/oe-core/meta \
+"
 
+License
+-------
+Copyright (C) 2016 Wind River Systems, Inc.
+
+<fill out license here>

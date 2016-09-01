@@ -1,3 +1,12 @@
+#
+# banner class
+#
+# Copyright (C) 2016 Wind River
+#
+# Purpose of this class is to allow a template to easily display banners
+# to the user at template configuration time as well as standard build time.
+#
+
 # We only want to display the banner -once- and when the build has started...
 addhandler wrl_banner_eventhandler
 wrl_banner_eventhandler[eventmask] = "bb.event.ParseStarted bb.event.BuildStarted"
