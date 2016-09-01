@@ -1,6 +1,7 @@
 This is simply a test layer for use by the wr-template layer.
 
-The following lists the various tests assisted by this layer
+Once you have added the wr-template layer per the wr-template README file, do
+the following in order to test the functionality.
 
 Banners:
 
@@ -17,10 +18,111 @@ bitbake -c fetch bash
 
 You should only see the runtime banner displayed.
 
+Processing Wind River templates files...
+----------------------------------------------------------------------
+This is a test of the CONFIG_BANNER
+----------------------------------------------------------------------
+Parsing recipes: 100% |#################################| Time: 0:00:03
+...
+----------------------------------------------------------------------
+This is a test of the runtime banner
+----------------------------------------------------------------------
+Initialising tasks: 100% |#####################################################################################################| Time: 0:00:01
+...
 
-Banner w/ template:
+The gnerated 'README_confif_notes' file should include the top banner
+information.
 
-In your local.conf file (clear the previous test, then) add:
 
-WRTEMPLATES = "feature/banner"
+Default template:
+
+In your bblayers.conf file, add wr-template/tests/layers1 to BBLAYERS.
+
+such as:
+BBLAYERS ?= " \
+  /home/mhatle/git/oss/oe-core/wr-template \
+  /home/mhatle/git/oss/oe-core/meta \
+  /home/mhatle/git/oss/oe-core/wr-template/tests/layer1 \
+  "
+
+run bitbake -c fetch bash
+
+Output should look like:
+[mhatle@msp-dhcp15 build-wr]$ bitbake -c fetch bash
+Processing Wind River templates files...
+----------------------------------------------------------------------
+Test - Layer1 default template has been included.
+----------------------------------------------------------------------
+....
+
+The README_config_notes should include the above banner.
+
+The README_templates should include two README files automatically
+included by the layer.
+
+
+Broken default layer:
+
+In your bblayers.conf file, add wr-template/tests/layers2 to BBLAYERS.
+
+run bitbake -c fetch bash
+
+You should see an error:
+
+Processing Wind River templates files...
+ERROR: Unable to find template ['feature/notfound'], required by /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/default.
+ERROR: Aborting template processing.
+ERROR: Error parsing configuration files
+(and possibly a backtrace here...)
+
+
+Disable bad default template:
+
+Edit the conf/local.conf and add the following:
+
+WRTEMPLATES_SKIP = "layer2/templates/default"
+
+Parsing should complete, and skip the layer2 template.
+
+Change the skip to:
+
+WRTEMPLATES_SKIP = "feature/testtwo"
+
+Output should now show the 'default' from layer2 was included, but without
+the intentionally broken 'feature/testtwo' automatically included:
+
+Processing Wind River templates files...
+----------------------------------------------------------------------
+Test - Layer1 default template has been included.
+
+Test - Layer2 default template has been included.
+----------------------------------------------------------------------
+
+(order of above messages may be different)
+
+
+Recurise template inclusion:
+
+Add to the local.conf:
+
+WRTEMPLATES = "feature/testthree"
+
+bitbake -c fetch bash
+
+you should now see the following two messages added:
+
+----------------------------------------------------------------------
+You have included feature/testthree from layers2
+
+You have included feature/testthree from layers1
+----------------------------------------------------------------------
+
+(order is not important)
+
+looking in conf/wrtemplates.conf (order does matter), you should see (at the end):
+
+#### /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testthree
+require /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testthree/template.conf
+#### /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree
+require /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree/template.conf
 

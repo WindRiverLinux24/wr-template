@@ -1,0 +1,2 @@
+# Intentionally pick a bad name to trigger an error
+feature/notfound
