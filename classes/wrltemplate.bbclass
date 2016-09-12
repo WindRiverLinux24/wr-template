@@ -51,33 +51,25 @@ addhandler wrl_template_processing_eventhandler
 wrl_template_processing_eventhandler[eventmask] = "bb.event.ConfigParsed"
 #wrl_template_processing_eventhandler[eventmask] = "bb.event.SanityCheck"
 python wrl_template_processing_eventhandler () {
-    def find_template(bbpath, template, startpath=None, known=[]):
+    def find_template(bbpath, template, known=[], startpath=None):
         """
         known will be modified, so it's best to pass it in as a copy
         """
         templates = []
         nflist = []
 
-        # Following standard bitbake paths, first in win
-        bbpaths = bbpath.split(':')
-
-        # Rearrange the bbpaths to start with 'startpath'
-        # 'rolling' any earlier paths to the end, i.e.
-        # a:b:c:d:e:f with a startpath of 'd' will become
-        # d:e:f:a:b:c
-        if startpath:
-           try:
-               indx = bbpaths.index(startpath)
-               l = len(bbpaths)
-               if indx != 0:
-                   path = ":".join(bbpaths[-1 * (l - (indx)):]) + ":" + ":".join(bbpaths[:(indx)])
-                   bbpaths = path.split(':')
-           except ValueError:
-               pass
+        spath = startpath
 
         notfound = 1
-        # Search the path for the first template found
-        for path in bbpaths:
+        # Search the path for the first template found, not already known
+        for path in bbpath.split(':'):
+            if spath:
+                if path != spath:
+                    continue
+                else:
+                    # We found it, stop looking...
+                    spath = None
+
             tmpldir = os.path.join(path, 'templates', template)
             if os.path.exists(tmpldir):
                 notfound = 0
@@ -89,10 +81,11 @@ python wrl_template_processing_eventhandler () {
                         skipped = 1
                         break
                 if skipped == 1:
-                    break
-                # If the template is known, we just return, nothing to do
+                    continue
+                # If the template is known, skip to the next template
+                # with this name
                 if tmpldir in known:
-                    break
+                    continue
                 known.append(tmpldir)
                 if os.path.exists(os.path.join(tmpldir, 'require')):
                     # Process requires -then- first
@@ -102,20 +95,21 @@ python wrl_template_processing_eventhandler () {
                             if line.startswith('#'):
                                 continue
                             else:
-                                if line == template:
-                                    # This is a recursive template, move to the -next- path
-                                    idx = bbpaths.index(path)
-                                    if idx + 1 >= len(bbpaths):
-                                        path = bbpaths[0]
-                                    else:
-                                        path = bbpaths[idx + 1]
-                                (reqtempl, nf, nnflist) = find_template(bbpath, line, path, known.copy())
+                                (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy())
+
+                                # Recursive templates are allowed to fail with not-found
+                                if line == template and nf == 1:
+                                   nf = 0
+
+                                # nf == 1; template was not found, change to '2', requirement not found, add to nflist
                                 if nf == 1:
                                     notfound = 2
                                     nflist.append(line)
+                                # nf == 2; requirement was not found, add to the requirement to nflist
                                 if nf == 2:
                                     notfound = 2
                                     nflist.append(nnflist)
+                                # For all requirements found, add them if not already known
                                 for req in reqtempl:
                                     if req not in known:
                                         known.append(req)
@@ -187,7 +181,7 @@ python wrl_template_processing_eventhandler () {
         # Look for 'default' templates
         for path in bbpath.split(':'):
             if os.path.exists(os.path.join(path, 'templates/default')):
-                (templs, notfound, nflist) = find_template(bbpath, 'default', path, templates.copy())
+                (templs, notfound, nflist) = find_template(bbpath, 'default', templates.copy(), path)
                 if notfound == 2:
                     for each in nflist:
                         bb.error("Unable to find template %s, required by %s." % (each, os.path.join(path, 'templates/default')))
@@ -198,7 +192,7 @@ python wrl_template_processing_eventhandler () {
 
         # Process user templates
         for templ in e.data.getVar("WRTEMPLATE", True).split():
-            (templs, notfound, nflist) = find_template(bbpath, templ, None, templates.copy())
+            (templs, notfound, nflist) = find_template(bbpath, templ, templates.copy())
             if notfound == 1:
                 bb.error('Unable to find template "%s"' % (templ))
                 error = 1
