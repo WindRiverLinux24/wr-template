@@ -30,7 +30,7 @@ This is a test of the runtime banner
 Initialising tasks: 100% |#####################################################################################################| Time: 0:00:01
 ...
 
-The gnerated 'README_confif_notes' file should include the top banner
+The generated 'README_config_notes' file should include the top banner
 information.
 
 
@@ -101,7 +101,7 @@ Test - Layer2 default template has been included.
 (order of above messages may be different)
 
 
-Recurise template inclusion:
+Recursive template inclusion:
 
 Add to the local.conf:
 

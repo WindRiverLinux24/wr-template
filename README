@@ -53,8 +53,7 @@ build is run.
 
 Dependencies
 ------------
-This layer must be included prior to oe-core.  It has not dependencies on
-other layers, but it is expected that other layers will depend on it.
+This layer depends on oe-core.
 
 
 Maintenance
