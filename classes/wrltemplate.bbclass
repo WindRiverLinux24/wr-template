@@ -51,9 +51,14 @@ addhandler wrl_template_processing_eventhandler
 wrl_template_processing_eventhandler[eventmask] = "bb.event.ConfigParsed"
 #wrl_template_processing_eventhandler[eventmask] = "bb.event.SanityCheck"
 python wrl_template_processing_eventhandler () {
-    def find_template(bbpath, template, known=[], startpath=None):
+    def find_template(bbpath, template, known=[], startpath=None, findfirst=True):
         """
         known will be modified, so it's best to pass it in as a copy
+
+        bbpath: Path to search
+        known: list of known templates
+        startpath: skip any found items prior to this path
+        findfirst: Stop once we find the first match, otherwise keep looking
         """
         templates = []
         nflist = []
@@ -81,11 +86,17 @@ python wrl_template_processing_eventhandler () {
                         skipped = 1
                         break
                 if skipped == 1:
-                    continue
+                    if findfirst:
+                        break
+                    else:
+                        continue
                 # If the template is known, skip to the next template
                 # with this name
                 if tmpldir in known:
-                    continue
+                    if findfirst:
+                        break
+                    else:
+                        continue
                 known.append(tmpldir)
                 if os.path.exists(os.path.join(tmpldir, 'require')):
                     # Process requires -then- first
@@ -95,11 +106,18 @@ python wrl_template_processing_eventhandler () {
                             if line.startswith('#'):
                                 continue
                             else:
-                                (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy())
+                                if line == template:
+                                    # optimization, we can start looking in this dir, since we know this is the
+                                    # last template with this name that was found...  Also set the firstfound
+                                    # to false, so the system will keep looking for a later, not already included
+                                    # copy of this template...
+                                    (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy(), path, False)
 
-                                # Recursive templates are allowed to fail with not-found
-                                if line == template and nf == 1:
-                                   nf = 0
+                                    # Recursive templates are allowed to fail with not-found
+                                    if nf == 1:
+                                       nf = 0
+                                else:
+                                    (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy())
 
                                 # nf == 1; template was not found, change to '2', requirement not found, add to nflist
                                 if nf == 1:
