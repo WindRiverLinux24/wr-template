@@ -40,8 +40,8 @@ In your bblayers.conf file, add wr-template/tests/layers1 to BBLAYERS.
 
 such as:
 BBLAYERS ?= " \
-  /home/mhatle/git/oss/oe-core/wr-template \
   /home/mhatle/git/oss/oe-core/meta \
+  /home/mhatle/git/oss/oe-core/wr-template \
   /home/mhatle/git/oss/oe-core/wr-template/tests/layer1 \
   "
 
@@ -65,6 +65,15 @@ Broken default layer:
 
 In your bblayers.conf file, add wr-template/tests/layers2 to BBLAYERS.
 
+Should look something like:
+
+BBLAYERS ?= " \
+  /home/mhatle/git/oss/oe-core/meta \
+  /home/mhatle/git/oss/oe-core/wr-template \
+  /home/mhatle/git/oss/oe-core/wr-template/tests/layer1 \
+  /home/mhatle/git/oss/oe-core/wr-template/tests/layer2 \
+  "
+
 run bitbake -c fetch bash
 
 You should see an error:
@@ -80,13 +89,17 @@ Disable bad default template:
 
 Edit the conf/local.conf and add the following:
 
-WRTEMPLATES_SKIP = "layer2/templates/default"
+WRTEMPLATE_SKIP = "layer2/templates/default"
+
+re-run the bitbake command
 
 Parsing should complete, and skip the layer2 template.
 
 Change the skip to:
 
-WRTEMPLATES_SKIP = "feature/testtwo"
+WRTEMPLATE_SKIP = "feature/testtwo"
+
+re-run the bitbake command
 
 Output should now show the 'default' from layer2 was included, but without
 the intentionally broken 'feature/testtwo' automatically included:
@@ -100,12 +113,16 @@ Test - Layer2 default template has been included.
 
 (order of above messages may be different)
 
+The README_templates file will now include three files.
+
 
 Recursive template inclusion:
 
+(keep previous test's configuration)
+
 Add to the local.conf:
 
-WRTEMPLATES = "feature/testthree"
+WRTEMPLATE = "feature/testthree"
 
 bitbake -c fetch bash
 
@@ -119,26 +136,34 @@ You have included feature/testthree from layers1
 
 (order is not important)
 
-looking in conf/wrtemplates.conf (order does matter), you should see (at the end):
+looking in conf/wrtemplate.conf (order does matter), you should see (at the end):
 
 #### /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testthree
 require /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testthree/template.conf
 #### /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree
 require /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree/template.conf
 
+Similarly the README_templates file, has added two entries at the end for the
+feature/testthree templates.
+
 
 Verify an alternative machine only updates the machine files:
 
-run MACHINE=qemuarm bitbake -c fetch
+(re-use previous configuration)
 
-Look in the conf directory for the 'wr*' files.  You should notice the dates on
-the two files with 'qemuarm' in them are newer then the other files.
+run MACHINE=qemuarm bitbake -c fetch bash
+
+Look in the conf directory for the 'wr*' files.  You should notice the dates
+and times of the two files with 'qemuarm' in them are newer then the other
+files.
 
 This shows the base template files were kept, and only the missing machine files
 were updated.
 
 
 General image modification:
+
+(re-use previous configuration)
 
 This test will build two test images, then add a template, and add an 'exception'
 so that only one image gets the new code
@@ -156,11 +181,11 @@ run  runqemu qemux86 test-image-two nographic
 (the system should boot, you can login as root)
 
 
-Add the following to your local.conf (after any existing WRTEMPLATES entries):
+Add the following to your local.conf (after any existing WRTEMPLATE entries):
 
-WRTEMPLATES += "feature/target-toolchain"
+WRTEMPLATE += "feature/target-toolchain"
 
-WRTEMPLATES_IMAGE_pn-test-image-two = '0'
+WRTEMPLATE_IMAGE_pn-test-image-two = '0'
 
 run  bitbake test-image-one test-image-two
 
