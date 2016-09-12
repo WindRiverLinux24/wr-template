@@ -147,6 +147,50 @@ Similarly the README_templates file, has added two entries at the end for the
 feature/testthree templates.
 
 
+Verify only the first template is included:
+
+(re-use previous configuration)
+
+Add the following to your local.conf:
+
+WRTEMPLATE += "feature/testfour"
+
+
+run bitbake -c fetch bash
+
+In the config banners verify that you see:
+
+-----
+You have included feature/testfour from layers1
+-----
+
+In the conf/wrtemplate.conf you should see:
+
+#### /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testfour
+require /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testfour/template.conf
+
+
+You should NOT see a reference to 'testfour' in the 'layer2'.  (This would indicate a failure)
+
+
+Verify that a template required in one layer, picks up a template from another (earlier) layer, and skips already defined:
+
+(re-use previous configuration)
+
+Add the following to your local.conf:
+
+WRTEMPLATE += "feature/testfour"
+
+
+run bitbake -c fetch bash
+
+In the conf/wrtemplates.conf you should see the following added...
+
+#### /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testfive
+
+Otherwise everything else should be the same as the prior run.
+
+
 Verify an alternative machine only updates the machine files:
 
 (re-use previous configuration)
