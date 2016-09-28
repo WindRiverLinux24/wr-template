@@ -48,7 +48,7 @@ BBLAYERS ?= " \
 run bitbake -c fetch bash
 
 Output should look like:
-[mhatle@msp-dhcp15 build-wr]$ bitbake -c fetch bash
+$ bitbake -c fetch bash
 Processing Wind River templates files...
 ----------------------------------------------------------------------
 Test - Layer1 default template has been included.
