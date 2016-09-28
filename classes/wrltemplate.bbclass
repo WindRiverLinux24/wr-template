@@ -113,40 +113,40 @@ python wrl_template_processing_eventhandler () {
                         continue
                 known.append(tmpldir)
                 if os.path.exists(os.path.join(tmpldir, 'require')):
-                    # Process requires -then- first
-                        f = open(os.path.join(tmpldir, 'require'))
-                        for line in f.readlines():
-                            line = line.lstrip().strip()
-                            if line.startswith('#'):
-                                continue
-                            else:
-                                if line == template:
-                                    # optimization, we can start looking in this dir, since we know this is the
-                                    # last template with this name that was found...  Also set the firstfound
-                                    # to false, so the system will keep looking for a later, not already included
-                                    # copy of this template...
-                                    (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy(), path, False)
+                    # Process requires -then- findfirst (the template)
+                    f = open(os.path.join(tmpldir, 'require'))
+                    for line in f.readlines():
+                        line = line.lstrip().strip()
+                        if line.startswith('#'):
+                            continue
+                        else:
+                            if line == template:
+                                # optimization, we can start looking in this dir, since we know this is the
+                                # last template with this name that was found...  Also set the firstfound
+                                # to false, so the system will keep looking for a later, not already included
+                                # copy of this template...
+                                (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy(), path, False)
 
-                                    # Recursive templates are allowed to fail with not-found
-                                    if nf == 1:
-                                       nf = 0
-                                else:
-                                    (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy())
-
-                                # nf == 1; template was not found, change to '2', requirement not found, add to nflist
+                                # Recursive templates are allowed to fail with not-found
                                 if nf == 1:
-                                    notfound = 2
-                                    nflist.append(line)
-                                # nf == 2; requirement was not found, add to the requirement to nflist
-                                if nf == 2:
-                                    notfound = 2
-                                    nflist.append(nnflist)
-                                # For all requirements found, add them if not already known
-                                for req in reqtempl:
-                                    if req not in known:
-                                        known.append(req)
-                                        templates.append(req)
-                        f.close()
+                                    nf = 0
+                            else:
+                                (reqtempl, nf, nnflist) = find_template(bbpath, line, known.copy())
+
+                            # nf == 1; template was not found, change to '2', requirement not found, add to nflist
+                            if nf == 1:
+                                notfound = 2
+                                nflist.append(line)
+                            # nf == 2; requirement was not found, add to the requirement to nflist
+                            elif nf == 2:
+                                notfound = 2
+                                nflist.append(nnflist)
+                            # For all requirements found, add them if not already known
+                            for req in reqtempl:
+                                if req not in known:
+                                    known.append(req)
+                                    templates.append(req)
+                    f.close()
 
                 # Now that requirements have been handled, add the template to the list
                 # templates should contain all requirements, then the template
@@ -173,7 +173,8 @@ python wrl_template_processing_eventhandler () {
     wrimaget = 0
     wrimagemt = 0
 
-    # If the config file looks ok, verify they are newer then this class
+    # If this class changes, we need to regenerate the templates
+    # In order to do this, compare the mtime of this class and the generated files
     if e.data.getVar("WRTEMPLATE", True) == e.data.getVarFlag("WRTEMPLATE", 'manual', True) and \
        e.data.getVar("WRTEMPLATE", True) == e.data.getVarFlag("WRTEMPLATE", 'machine', True) and \
        e.data.getVar("WRTEMPLATE_SKIP", True) == e.data.getVarFlag("WRTEMPLATE", "skip", True) and \
