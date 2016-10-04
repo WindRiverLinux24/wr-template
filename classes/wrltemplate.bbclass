@@ -34,16 +34,8 @@
 # specific conf/machine/${MACHINE}.conf file and layers it may contain,
 # otherwise they will be ignored
 #
-# The generate files are listed below:
-
-WRTEMPLATE_README = "README_templates"
-WRTEMPLATE_CONF_WRTEMPLATE = "conf/wrtemplate.conf"
-WRTEMPLATE_CONF_WRTEMPLATE_MACH = "conf/wrtemplate_${MACHINE}.conf"
-WRTEMPLATE_CONF_WRIMAGE = "conf/wrimage.inc"
-WRTEMPLATE_CONF_WRIMAGE_MACH = "conf/wrimage_${MACHINE}.inc"
-
-include ${WRTEMPLATE_CONF_WRTEMPLATE}
-include ${WRTEMPLATE_CONF_WRTEMPLATE_MACH}
+# See conf/bitbake.conf, in this layer, for the default names of all
+# generated files.
 
 # Space separated list of templates to load.  Note: "default" templates are
 # always loaded.
