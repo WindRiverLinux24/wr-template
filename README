@@ -63,15 +63,10 @@ Contact <support@windriver.com> or your support representative for more
 information on submitting changes.
 
 
-Using the wr-template layer
----------------------------
-This layer must be added to the bblayers.conf in your project prior to the
-OpenEmbedded 'meta' layer, such as:
+Building the wr-template layer
+-----------------------------------
+This layer should be added to the bblayers.conf file.
 
-BBLAYERS ?= " \
-  /home/mhatle/git/oss/oe-core/wr-template \
-  /home/mhatle/git/oss/oe-core/meta \
-"
 
 License
 -------
