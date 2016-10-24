@@ -334,7 +334,7 @@ python wrl_template_processing_eventhandler () {
                         if os.path.exists(tconf):
                             fin = open(tconf, 'r')
                             for line in fin.readlines():
-                                f.write('%s\n' % line)
+                                f.write('%s' % line)
                             fin.close()
                         f.write('\n')
             f.close()
