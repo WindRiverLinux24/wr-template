@@ -57,6 +57,12 @@ addhandler wrl_template_processing_eventhandler
 wrl_template_processing_eventhandler[eventmask] = "bb.event.ConfigParsed"
 #wrl_template_processing_eventhandler[eventmask] = "bb.event.SanityCheck"
 python wrl_template_processing_eventhandler () {
+    # Do nothing when BB_SETSCENE_ENFORCE = 1, avoid generating and
+    # packing conf/wr* files in ext sdk.
+    if d.getVar('BB_SETSCENE_ENFORCE', True) == '1':
+        d.setVar('WRTEMPLATE_IMAGE', '0')
+        return
+
     def find_template(bbpath, template, known=[], startpath=None, findfirst=True):
         """
         known will be modified, so it's best to pass it in as a copy
