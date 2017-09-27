@@ -377,7 +377,7 @@ python wrl_template_processing_eventhandler () {
                         f.write('\n')
             f.close()
 
-        e.data.setVar("BB_INVALIDCONF", '1')
+        e.data.setVar("BB_INVALIDCONF", True)
 }
 
 # We must remove at least the *.conf files before the first
