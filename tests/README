@@ -139,9 +139,12 @@ You have included feature/testthree from layers1
 looking in conf/wrtemplate.conf (order does matter), you should see (at the end):
 
 #### /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testthree
-require /home/mhatle/git/oss/oe-core/wr-template/tests/layer2/templates/feature/testthree/template.conf
+WRTEMPLATE[mtimes] += "<path>(<timestamp>)"
+CONFIG_BANNER[layers2_feature_testthree] = "You have included feature/testthree from layers2"
+
 #### /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree
-require /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testthree/template.conf
+WRTEMPLATE[mtimes] += "<path>(<timestamp>)"
+CONFIG_BANNER[layers1_feature_testthree] = "You have included feature/testthree from layers1"
 
 Similarly the README_templates file, has added two entries at the end for the
 feature/testthree templates.
@@ -167,7 +170,8 @@ You have included feature/testfour from layers1
 In the conf/wrtemplate.conf you should see:
 
 #### /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testfour
-require /home/mhatle/git/oss/oe-core/wr-template/tests/layer1/templates/feature/testfour/template.conf
+WRTEMPLATE[mtimes] += "<path>(<timestamp>)"
+CONFIG_BANNER[layers1_feature_testfour] = "You have included feature/testfour from layers1"
 
 
 You should NOT see a reference to 'testfour' in the 'layer2'.  (This would indicate a failure)
@@ -179,7 +183,7 @@ Verify that a template required in one layer, picks up a template from another (
 
 Add the following to your local.conf:
 
-WRTEMPLATE += "feature/testfour"
+WRTEMPLATE += "feature/testfive"
 
 
 run bitbake -c fetch bash

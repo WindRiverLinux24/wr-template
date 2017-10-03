@@ -69,7 +69,7 @@ This layer should be added to the bblayers.conf file.
 
 License
 -------
-Copyright (C) 2016 Wind River Systems, Inc.
+Copyright (C) 2016-2017 Wind River Systems, Inc.
 
 Source code included in the tree for individual recipes is under the LICENSE
 stated in the associated recipe (.bb file) unless otherwise stated.

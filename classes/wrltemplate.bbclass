@@ -34,8 +34,20 @@
 # specific conf/machine/${MACHINE}.conf file and layers it may contain,
 # otherwise they will be ignored
 #
-# See conf/bitbake.conf, in this layer, for the default names of all
-# generated files.
+
+WRTEMPLATE_README ?= "${TOPDIR}/README_templates"
+WRTEMPLATE_README[documentation] = "Generated Wind River template README file path"
+WRTEMPLATE_CONF_WRTEMPLATE ?= "${TOPDIR}/conf/wrtemplate.conf"
+WRTEMPLATE_CONF_WRTEMPLATE[documentation] = "Generated template configuration file path"
+WRTEMPLATE_CONF_WRTEMPLATE_MACH ?= "${TOPDIR}/conf/wrtemplate_${MACHINE}.conf"
+WRTEMPLATE_CONF_WRTEMPLATE_MACH[documentation] = "Generated machine specific template configuration file path"
+WRTEMPLATE_CONF_WRIMAGE ?= "${TOPDIR}/conf/wrimage.inc"
+WRTEMPLATE_CONF_WRIMAGE[documentation] = "Generated image recipe extension file path"
+WRTEMPLATE_CONF_WRIMAGE_MACH ?= "${TOPDIR}/conf/wrimage_${MACHINE}.inc"
+WRTEMPLATE_CONF_WRIMAGE_MACH[documentation] = "Generated machine specific image recipe extension file path"
+
+include ${WRTEMPLATE_CONF_WRTEMPLATE}
+include ${WRTEMPLATE_CONF_WRTEMPLATE_MACH}
 
 # Space separated list of templates to load.  Note: "default" templates are
 # always loaded.
