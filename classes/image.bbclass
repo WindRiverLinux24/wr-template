@@ -64,11 +64,5 @@ inherit ${@wrlt_next_class(d, 'image')}
 
 # The includes must always be -after- image.bbclass inherit
 # because they may add or remove from the image variable
-
-# The default is set in the bitbake.conf file.  We want to set a backup
-# default which will be used for layer index parsing.
-WRTEMPLATE_CONF_WRIMAGE ??= "wrlnoimage.inc"
-WRTEMPLATE_CONF_WRIMAGE_MACH ??= "wrlnoimage_mach.inc"
-
 require ${@['${WRTEMPLATE_CONF_WRIMAGE}', 'wrlnoimage.inc'][d.getVar('WRTEMPLATE_IMAGE', True) != '1']}
 require ${@['${WRTEMPLATE_CONF_WRIMAGE_MACH}', 'wrlnoimage_mach.inc'][d.getVar('WRTEMPLATE_IMAGE', True) != '1']}
