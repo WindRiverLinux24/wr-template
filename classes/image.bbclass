@@ -64,5 +64,5 @@ inherit ${@wrlt_next_class(d, 'image')}
 
 # The includes must always be -after- image.bbclass inherit
 # because they may add or remove from the image variable
-require ${@['${WRTEMPLATE_CONF_WRIMAGE}', 'wrlnoimage.inc'][d.getVar('WRTEMPLATE_IMAGE') != '1']}
-require ${@['${WRTEMPLATE_CONF_WRIMAGE_MACH}', 'wrlnoimage_mach.inc'][d.getVar('WRTEMPLATE_IMAGE') != '1']}
+require ${@['${WRTEMPLATE_CONF_WRIMAGE}', 'wrlnoimage.inc'][d.getVar('WRTEMPLATE_IMAGE') != '1' or not d.getVar('WRTEMPLATE_CONF_WRIMAGE')]}
+require ${@['${WRTEMPLATE_CONF_WRIMAGE_MACH}', 'wrlnoimage_mach.inc'][d.getVar('WRTEMPLATE_IMAGE') != '1' or not d.getVar('WRTEMPLATE_CONF_WRIMAGE_MACH')]}
