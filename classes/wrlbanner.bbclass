@@ -47,7 +47,7 @@ python wrl_banner_eventhandler () {
     def write_banner_file(d, bannerfile, bannervar):
         import textwrap
         if bannerfile:
-            fn = os.path.join(d.getVar('TOPDIR', True),bannerfile)
+            fn = os.path.join(d.getVar('TOPDIR'),bannerfile)
         else:
             fn = ""
         f = None
@@ -56,7 +56,7 @@ python wrl_banner_eventhandler () {
         for flag in (d.getVarFlags(bannervar) or {}):
             if flag == "doc" or flag == "vardeps" or flag == "vardepsexp":
                 continue
-            banner = d.getVarFlag(bannervar, flag, True)
+            banner = d.getVarFlag(bannervar, flag)
             if banner:
                 if banner_head == 0:
                    banner_head = 1
