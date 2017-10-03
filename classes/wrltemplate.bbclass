@@ -155,11 +155,15 @@ python wrl_template_processing_eventhandler () {
     # Find this class... we then compare the date vs the generated files
     thisclass = bb.utils.which(bbpath, 'classes/wrltemplate.bbclass')
 
-    readmef = os.path.join(e.data.getVar('TOPDIR'), d.getVar('WRTEMPLATE_README'))
-    wrtemplatef = os.path.join(e.data.getVar('TOPDIR'), d.getVar('WRTEMPLATE_CONF_WRTEMPLATE'))
-    wrtemplatemf = os.path.join(e.data.getVar('TOPDIR'), d.getVar('WRTEMPLATE_CONF_WRTEMPLATE_MACH'))
-    wrimagef = os.path.join(e.data.getVar('TOPDIR'), d.getVar('WRTEMPLATE_CONF_WRIMAGE'))
-    wrimagemf = os.path.join(e.data.getVar('TOPDIR'), d.getVar('WRTEMPLATE_CONF_WRIMAGE_MACH'))
+    readmef = d.getVar('WRTEMPLATE_README')
+    wrtemplatef = d.getVar('WRTEMPLATE_CONF_WRTEMPLATE')
+    wrtemplatemf = d.getVar('WRTEMPLATE_CONF_WRTEMPLATE_MACH')
+    wrimagef = d.getVar('WRTEMPLATE_CONF_WRIMAGE')
+    wrimagemf = d.getVar('WRTEMPLATE_CONF_WRIMAGE_MACH')
+
+    if not (readmef and wrtemplatef and wrtemplatemf and wrimagef and wrimagemf):
+        bb.warn("wrltemplate processing skipped, variables not configured properly.")
+        return
 
     classmt = 0
     readmet = 0
