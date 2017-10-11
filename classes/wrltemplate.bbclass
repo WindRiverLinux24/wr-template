@@ -46,8 +46,14 @@ WRTEMPLATE_CONF_WRIMAGE[documentation] = "Generated image recipe extension file 
 WRTEMPLATE_CONF_WRIMAGE_MACH ?= "${TOPDIR}/conf/wrimage_${MACHINE}.inc"
 WRTEMPLATE_CONF_WRIMAGE_MACH[documentation] = "Generated machine specific image recipe extension file path"
 
+WRTEMPLATE_INHERIT_CHECK := "${INHERIT}"
+
+WRTEMPLATE_CLASSES ?= ""
+
 include ${WRTEMPLATE_CONF_WRTEMPLATE}
 include ${WRTEMPLATE_CONF_WRTEMPLATE_MACH}
+
+inherit ${WRTEMPLATE_CLASSES}
 
 # Space separated list of templates to load.  Note: "default" templates are
 # always loaded.
@@ -394,6 +400,24 @@ python wrl_template_processing_eventhandler () {
             f.close()
 
         e.data.setVar("BB_INVALIDCONF", True)
+
+    else:
+        # Check if a template has modified the INHERIT, this won't work..
+        template_before = e.data.getVar("WRTEMPLATE_INHERIT_CHECK")
+        template_after = e.data.getVar("INHERIT")
+
+        if template_before != template_after:
+            bb.error("The value of INHERIT has changed due to a template.  Templates " \
+                    "should only add inherits by specifying changes to WRTEMPLATE_CLASSES.")
+
+            inherits = ""
+            for inherit in template_after.split():
+                if inherit not in template_before.split():
+                    inherits += " +%s" % inherit
+                else:
+                    inherits += " %s" % inherit
+
+            bb.fatal("INHERIT:%s" % inherits)
 }
 
 # We must remove at least the *.conf files before the first
