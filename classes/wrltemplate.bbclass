@@ -75,8 +75,7 @@ addhandler wrl_template_processing_eventhandler
 wrl_template_processing_eventhandler[eventmask] = "bb.event.ConfigParsed"
 #wrl_template_processing_eventhandler[eventmask] = "bb.event.SanityCheck"
 python wrl_template_processing_eventhandler () {
-    # Generate the wr files in conf even for do_populate_sdk_ext(), but
-    # remove them.  See items at the end of this class.
+    # Generate the wr files in conf even for do_populate_sdk_ext().
 
     def find_template(bbpath, template, known=[], startpath=None, findfirst=True):
         """
@@ -418,16 +417,4 @@ python wrl_template_processing_eventhandler () {
                     inherits += " %s" % inherit
 
             bb.fatal("INHERIT:%s" % inherits)
-}
-
-# We must remove at least the *.conf files before the first
-# recipe parse during sdk_ext installation or it will fail!
-# They will be re-generated after the first parsing.
-#
-# There are still entries for these in the manifest, but the
-# installation script does not care.
-#
-sdk_ext_postinst_prepend () {
-    printf "\nRemoving WR template conf files from %s/conf\n" $target_sdk_dir
-    rm -f $target_sdk_dir/conf/wrtemplate*.conf $target_sdk_dir/conf/wrimage*.inc
 }
