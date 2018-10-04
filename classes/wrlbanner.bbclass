@@ -44,7 +44,14 @@ python wrl_banner_eventhandler () {
     #CONFIG_BANNER[path_to_template] = "..."
     #BANNER[path_to_template] = "..."
     #
-    def write_banner_file(d, bannerfile, bannervar):
+    def pLine(line, fatal):
+        if fatal:
+            bb.error(line)
+        else:
+            bb.plain(line)
+
+
+    def write_banner_file(d, bannerfile, bannervar,fatal=None):
         import textwrap
         if bannerfile:
             fn = os.path.join(d.getVar('TOPDIR'),bannerfile)
@@ -52,6 +59,7 @@ python wrl_banner_eventhandler () {
             fn = ""
         f = None
         banner_head = 0
+        dLine = '----------------------------------------------------------------------'
 
         for flag in (d.getVarFlags(bannervar) or {}):
             if flag == "doc" or flag == "vardeps" or flag == "vardepsexp":
@@ -60,10 +68,10 @@ python wrl_banner_eventhandler () {
             if banner:
                 if banner_head == 0:
                    banner_head = 1
-                   bb.plain('----------------------------------------------------------------------')
+                   pLine(dLine,fatal)
                 else:
-                   bb.plain('')
-                bb.plain(textwrap.fill(banner,70))
+                   pLine('',fatal)
+                pLine(textwrap.fill(banner,70),fatal)
 
             if banner and fn:
                 try:
@@ -76,14 +84,19 @@ python wrl_banner_eventhandler () {
                 except IOError as ex:
                     bb.error("Unable to create banner file: %s: %s" % (ex.filename, ex.args[1]))
                     f = None
+
         if banner_head == 1:
-            bb.plain('----------------------------------------------------------------------')
+            pLine(dLine,fatal)
 
         if f != None:
             f.close()
 
+        if fatal and banner_head == 1:
+            bb.fatal("Template configuration errors -- terminating!")
+
     if bb.event.getName(e) == "ParseStarted":
         write_banner_file(e.data, "README_config_notes", "CONFIG_BANNER")
+        write_banner_file(e.data, "README_config_failures", "FATAL_CONFIG_BANNER",1)
 
     if bb.event.getName(e) == "BuildStarted":
         write_banner_file(e.data, None, "BANNER")

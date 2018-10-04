@@ -34,6 +34,25 @@ The generated 'README_config_notes' file should include the top banner
 information.
 
 
+Now add a FATAL_CONFIG_BANNER to the local.conf:
+
+FATAL_CONFIG_BANNER[banner] = "This is a fatal build error message."
+
+Now run bitbake -c fetch bash
+
+You should see the following banner displayed, and the build stop.
+
+ERROR: ----------------------------------------------------------------------
+ERROR: This is a fatal build error message.
+ERROR: ----------------------------------------------------------------------
+ERROR: Template configuration errors -- terminating!
+
+The file "README_config_failures" should also have been generated.
+
+(before continuing with the next steps, remove the fatal banner from the
+local.conf)
+
+
 Default template:
 
 In your bblayers.conf file, add wr-template/tests/layers1 to BBLAYERS.
