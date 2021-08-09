@@ -252,7 +252,7 @@ Add the following to your local.conf (after any existing WRTEMPLATE entries):
 
 WRTEMPLATE += "feature/target-toolchain"
 
-WRTEMPLATE_IMAGE_pn-test-image-two = '0'
+WRTEMPLATE_IMAGE:pn-test-image-two = '0'
 
 run  bitbake test-image-one test-image-two
 

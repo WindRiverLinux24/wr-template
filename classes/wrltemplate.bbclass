@@ -67,7 +67,7 @@ WRTEMPLATE_BSP_PKGS ?= '1'
 
 # Should the image use the image template items
 # This can be set to != 1 globally, or on a per recipe basis such aas:
-# WRTEMPLATE_IMAGE_pn-core-image-minimal = '0'
+# WRTEMPLATE_IMAGE:pn-core-image-minimal = '0'
 WRTEMPLATE_IMAGE ?= '1'
 
 # Check if we need to reprocess the templates
