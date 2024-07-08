@@ -387,7 +387,7 @@ python wrl_template_processing_eventhandler () {
                 for t in templates:
                     # Search templates in parent layer if it is a sublayer
                     t_layer = get_layer_from_template(t)
-                    if t.startswith(machlayer) or (t_layer and machlayer.startswith(t_layer)):
+                    if t.startswith(machlayer + "/") or (t_layer and machlayer.startswith(t_layer + "/")):
                         f.write('#### %s\n' % t)
                         tconf = os.path.realpath(os.path.join(t, 'bsp-pkgs.conf'))
                         if os.path.exists(tconf):
